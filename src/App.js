@@ -2,17 +2,15 @@
 const { Console } = require('@woowacourse/mission-utils');
 
 class App {
-  run() {
-    Console.readLineAsync('덧셈할 문자열을 입력해 주세요.\n', (input) => {
-      try {
-        const result = this.add(input);
-        Console.print(`결과 : ${result}`);
-      } catch (error) {
-        Console.print(error.message);
-      } finally {
-        Console.close();
-      }
-    });
+  async run() {
+    try {
+      const input = await Console.readLineAsync('덧셈할 문자열을 입력해 주세요.\n');
+      const result = this.add(input);
+      Console.print(`결과 : ${result}`);
+    } catch (error) {
+      Console.print(error.message);
+    }
+    // Console.close(); // 제거되었습니다.
   }
 
   add(input) {
@@ -49,8 +47,5 @@ class App {
     return sum;
   }
 }
-
-const app = new App();
-app.run();
 
 module.exports = App;
