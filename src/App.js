@@ -1,3 +1,4 @@
+// App.js
 import { Console } from "@woowacourse/mission-utils";
 
 class App {
@@ -20,7 +21,8 @@ class App {
   }
 
   calculateSum(input) {
-    if (!input) {
+    // 빈 문자열 처리
+    if (!input || input.trim() === "") {
       return 0;
     }
 
@@ -38,10 +40,12 @@ class App {
 
     const numbers = numbersString.split(delimiters).map(Number);
 
+    // 음수 입력에 대한 에러 처리
     if (numbers.some((num) => num < 0)) {
       throw new Error("[ERROR] 음수는 허용되지 않습니다.");
     }
 
+    // 숫자 합산 기능
     return numbers.reduce((sum, num) => sum + num, 0);
   }
 
