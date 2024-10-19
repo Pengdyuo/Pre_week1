@@ -4,21 +4,12 @@ import { Console } from "@woowacourse/mission-utils";
 class App {
   async run() {
     try {
-      const input = await this.getInput();
+      const input = await Console.readLineAsync("덧셈할 문자열을 입력해 주세요: ");
       const result = this.calculateSum(input);
       this.printResult(result);
     } catch (error) {
-      Console.print(`오류: ${error.message}`);
+      this.printError(error.message);
     }
-  }
-
-  async getInput() {
-    // 비동기 입력 최적화: 즉시 실행 가능한 Promise로 입력 처리 단순화
-    return new Promise((resolve) => {
-      Console.readLineAsync("덧셈할 문자열을 입력해 주세요: ", (input) => {
-        resolve(input);
-      });
-    });
   }
 
   calculateSum(input) {
@@ -63,8 +54,13 @@ class App {
   }
 
   printResult(result) {
-    // 비동기 출력 최적화: 출력 중에 지연을 줄이기 위해 간단하게 출력 처리
+    // 결과 출력 처리
     Console.print(`결과: ${result}`);
+  }
+
+  printError(message) {
+    // 에러 메시지 출력
+    Console.print(message);
   }
 }
 
