@@ -8,7 +8,7 @@ class App {
       const result = this.calculateSum(input);
       this.printResult(result);
     } catch (error) {
-      Console.print(error.message);
+      Console.print(`오류: ${error.message}`);
     }
   }
 
@@ -22,43 +22,49 @@ class App {
   }
 
   calculateSum(input) {
-    // 빈 문자열 처리 기능
-    if (!input || input.trim() === "") {
+    let delimiters = /[,:]/; // 기본 구분자: 쉼표(,)와 콜론(:)
+    let numbersString = input;
+
+    // 커스텀 구분자 추출
+    if (numbersString.startsWith("//")) {
+      const customDelimiterMatch = numbersString.split("\n");
+      if (customDelimiterMatch.length < 2) {
+        throw new Error("[ERROR] 커스텀할 문자와 숫자를 입력해야 합니다.");
+      }
+      delimiters = new RegExp(`[${customDelimiterMatch[0][2]}]`);
+      numbersString = customDelimiterMatch[1];
+    }
+
+    // 문자열을 구분자로 나누기
+    const numberStrings = numbersString.split(delimiters);
+
+    // 빈 문자열 처리: 모든 값이 빈 문자열인 경우 0 반환
+    if (numberStrings.every((value) => value.trim() === "")) {
       return 0;
     }
 
-    let delimiters = /[,:]/;
-    let numbersString = input;
-
-    // 커스텀 구분자 처리
-    if (input.startsWith("//")) {
-      const customDelimiterMatch = input.match(/^\/\/(.)\n(.*)/);
-      if (customDelimiterMatch) {
-        delimiters = new RegExp(`[${customDelimiterMatch[1]}]`);
-        numbersString = customDelimiterMatch[2];
+    // 예외 처리 및 숫자 합산
+    let sum = 0;
+    for (const value of numberStrings) {
+      if (value.trim() === "") {
+        throw new Error("[ERROR] 구분자만 있고 숫자는 없습니다.");
       }
+      if (isNaN(value)) {
+        throw new Error("[ERROR] 숫자가 아닌 값이 포함되어 있습니다.");
+      }
+      const number = parseInt(value, 10);
+      if (number < 0) {
+        throw new Error("[ERROR] 음수 값이 포함되어 있습니다.");
+      }
+      sum += number;
     }
 
-    // 숫자 추출 및 유효성 검사
-    const numbers = numbersString.split(delimiters).map((num) => {
-      if (isNaN(num)) {
-        throw new Error("[ERROR] 입력값에 숫자가 아닌 잘못된 값이 포함되어 있습니다.");
-      }
-      return Number(num);
-    });
-
-    // 음수 입력에 대한 에러 처리
-    if (numbers.some((num) => num < 0)) {
-      throw new Error("[ERROR] 음수는 허용되지 않습니다.");
-    }
-
-    // 숫자 합산 기능
-    return numbers.reduce((sum, num) => sum + num, 0);
+    return sum;
   }
 
   printResult(result) {
     // 비동기 출력 최적화: 출력 중에 지연을 줄이기 위해 간단하게 출력 처리
-    Console.print(`결과 : ${result}`);
+    Console.print(`결과: ${result}`);
   }
 }
 
