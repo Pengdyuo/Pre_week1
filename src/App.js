@@ -1,4 +1,3 @@
-// App.js
 import { Console } from "@woowacourse/mission-utils";
 
 class App {
@@ -21,7 +20,7 @@ class App {
   }
 
   calculateSum(input) {
-    // 빈 문자열 처리
+    // 빈 문자열 처리 기능
     if (!input || input.trim() === "") {
       return 0;
     }
@@ -31,11 +30,16 @@ class App {
 
     // 커스텀 구분자 처리
     if (input.startsWith("//")) {
-      const customDelimiterMatch = input.match(/^/ / (.) \n(.*) /);
+      const customDelimiterMatch = input.match(/^\/\/(.)\n(.*)/);
       if (customDelimiterMatch) {
         delimiters = new RegExp(customDelimiterMatch[1]);
         numbersString = customDelimiterMatch[2];
       }
+    }
+
+    // 잘못된 입력에 대한 에러 처리 (숫자가 아닌 경우)
+    if (!/^[0-9,\n:;/]*$/.test(numbersString)) {
+      throw new Error("[ERROR] 입력값에 숫자가 아닌 잘못된 값이 포함되어 있습니다.");
     }
 
     const numbers = numbersString.split(delimiters).map(Number);
