@@ -1,4 +1,4 @@
-mport { Console } from "@woowacourse/mission-utils";
+import { Console } from "@woowacourse/mission-utils";
 import { StrSumFunc } from "./StrSumFunc";
 
 class App {
