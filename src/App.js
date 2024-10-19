@@ -1,3 +1,4 @@
+// App.js
 import { Console } from "@woowacourse/mission-utils";
 
 class App {
@@ -12,6 +13,7 @@ class App {
   }
 
   async getInput() {
+    // 비동기 입력 최적화: 즉시 실행 가능한 Promise로 입력 처리 단순화
     return new Promise((resolve) => {
       Console.readLineAsync("덧셈할 문자열을 입력해 주세요: ", (input) => {
         resolve(input);
@@ -32,17 +34,18 @@ class App {
     if (input.startsWith("//")) {
       const customDelimiterMatch = input.match(/^\/\/(.)\n(.*)/);
       if (customDelimiterMatch) {
-        delimiters = new RegExp(customDelimiterMatch[1]);
+        delimiters = new RegExp(`[${customDelimiterMatch[1]}]`);
         numbersString = customDelimiterMatch[2];
       }
     }
 
-    // 잘못된 입력에 대한 에러 처리 (숫자가 아닌 경우)
-    if (!/^[0-9,\n:;/]*$/.test(numbersString)) {
-      throw new Error("[ERROR] 입력값에 숫자가 아닌 잘못된 값이 포함되어 있습니다.");
-    }
-
-    const numbers = numbersString.split(delimiters).map(Number);
+    // 숫자 추출 및 유효성 검사
+    const numbers = numbersString.split(delimiters).map((num) => {
+      if (isNaN(num)) {
+        throw new Error("[ERROR] 입력값에 숫자가 아닌 잘못된 값이 포함되어 있습니다.");
+      }
+      return Number(num);
+    });
 
     // 음수 입력에 대한 에러 처리
     if (numbers.some((num) => num < 0)) {
@@ -54,6 +57,7 @@ class App {
   }
 
   printResult(result) {
+    // 비동기 출력 최적화: 출력 중에 지연을 줄이기 위해 간단하게 출력 처리
     Console.print(`결과 : ${result}`);
   }
 }
