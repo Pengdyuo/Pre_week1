@@ -1,51 +1,55 @@
-// App.js
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
 const { Console } = require('@woowacourse/mission-utils');
 
 class App {
-  async run() {
-    try {
-      const input = await Console.readLineAsync('덧셈할 문자열을 입력해 주세요.\n');
-      const result = this.add(input);
-      Console.print(`결과 : ${result}`);
-    } catch (error) {
-      Console.print(error.message);
-    }
-    // Console.close(); // 제거되었습니다.
+  run() {
+    return Console.readLineAsync('덧셈할 문자열을 입력해 주세요.\n')
+      .then((input) => {
+        const result = this.calculate(input);
+        Console.print(`결과 : ${result}`);
+      })
+      .catch((error) => {
+        Console.print(error.message);
+        throw error; // 예외를 다시 던져 테스트에서 감지할 수 있도록 합니다.
+      });
+    // Console.close()를 제거했습니다.
   }
 
-  add(input) {
-    if (input === null || input === '') {
-      return 0;
-    }
+  calculate(input) {
+    if (input === '' || input === null) return 0;
 
+    const numbers = this.parseNumbers(input);
+    this.validateNumbers(numbers);
+
+    return numbers.reduce((sum, num) => sum + num, 0);
+  }
+
+  parseNumbers(input) {
     let delimiters = [',', ':'];
-    let numbers = input;
+    let numbersString = input;
 
-    if (input.startsWith('//')) {
-      const delimiterEndIndex = input.indexOf('\n');
-      if (delimiterEndIndex === -1) {
-        throw new Error('[ERROR] 잘못된 형식입니다.');
-      }
-      const customDelimiter = input.substring(2, delimiterEndIndex);
-      delimiters.push(customDelimiter);
-      numbers = input.substring(delimiterEndIndex + 1);
+    const customDelimiterMatch = input.match(/^\/\/(.)\n(.*)/);
+    if (customDelimiterMatch) {
+      delimiters.push(customDelimiterMatch[1]);
+      numbersString = customDelimiterMatch[2];
     }
 
-    const tokens = numbers.split(new RegExp(`[${delimiters.join('')}]`));
+    // 구분자를 정규식에서 안전하게 사용하도록 이스케이프 처리
+    const escapedDelimiters = delimiters.map((d) => d.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
+    const regex = new RegExp(escapedDelimiters.join('|'));
 
-    const sum = tokens.reduce((acc, curr) => {
-      if (!/^\d+$/.test(curr)) {
-        throw new Error('[ERROR] 숫자 이외의 값이 포함되어 있습니다.');
-      }
-      const number = parseInt(curr, 10);
-      if (number < 0) {
-        throw new Error('[ERROR] 음수는 입력할 수 없습니다.');
-      }
-      return acc + number;
-    }, 0);
+    return numbersString.split(regex).map((num) => parseInt(num, 10));
+  }
 
-    return sum;
+  validateNumbers(numbers) {
+    numbers.forEach((num) => {
+      if (isNaN(num) || num < 0) {
+        throw new Error('[ERROR] 올바른 양수를 입력해 주세요.');
+      }
+    });
   }
 }
 
-module.exports = App;
+export default App;
