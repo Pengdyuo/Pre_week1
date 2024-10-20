@@ -1,7 +1,4 @@
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-
-const { Console } = require('@woowacourse/mission-utils');
+import { Console } from '@woowacourse/mission-utils';
 
 class App {
   run() {
@@ -14,7 +11,6 @@ class App {
         Console.print(error.message);
         throw error;
       });
-
   }
 
   calculate(input) {
@@ -30,21 +26,30 @@ class App {
     let delimiters = [',', ':'];
     let numbersString = input;
 
-    const customDelimiterMatch = input.match(/^\/\/(.)\n(.*)/);
+    // 커스텀 구분자 처리
+    const customDelimiterMatch = input.match(/^\/\/(.)\\n(.*)/);
     if (customDelimiterMatch) {
       delimiters.push(customDelimiterMatch[1]);
       numbersString = customDelimiterMatch[2];
     }
 
+    // 구분자들을 정규식으로 처리
     const escapedDelimiters = delimiters.map((d) => d.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
     const regex = new RegExp(escapedDelimiters.join('|'));
 
-    return numbersString.split(regex).map((num) => parseInt(num, 10));
+    // 숫자 추출 후 변환
+    return numbersString.split(regex).map((num) => {
+      const parsedNum = parseInt(num, 10);
+      if (isNaN(parsedNum)) {
+        throw new Error('[ERROR] 올바른 숫자를 입력해 주세요.');
+      }
+      return parsedNum;
+    });
   }
 
   validateNumbers(numbers) {
     numbers.forEach((num) => {
-      if (isNaN(num) || num < 0) {
+      if (num < 0) {
         throw new Error('[ERROR] 올바른 양수를 입력해 주세요.');
       }
     });
