@@ -14,10 +14,15 @@ class App {
         Console.print(error.message);
         throw error;
       });
+
   }
 
   calculate(input) {
+    if (input === '' || input === null) return 0;
+
     const numbers = this.parseNumbers(input);
+    this.validateNumbers(numbers);
+
     return numbers.reduce((sum, num) => sum + num, 0);
   }
 
@@ -34,15 +39,16 @@ class App {
     const escapedDelimiters = delimiters.map((d) => d.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
     const regex = new RegExp(escapedDelimiters.join('|'));
 
-    return numbersString.split(regex).map((num) => {
-      const parsedNum = parseInt(num, 10);
-      if (isNaN(parsedNum) || parsedNum < 0) {
+    return numbersString.split(regex).map((num) => parseInt(num, 10));
+  }
+
+  validateNumbers(numbers) {
+    numbers.forEach((num) => {
+      if (isNaN(num) || num < 0) {
         throw new Error('[ERROR] 올바른 양수를 입력해 주세요.');
       }
-      return parsedNum;
     });
   }
 }
 
 export default App;
-
