@@ -50,7 +50,7 @@ class App {
   validateNumbers(numbers) {
     numbers.forEach((num) => {
       if (num < 0) {
-        throw new Error('[ERROR] 올바른 양수를 입력해 주세요.');
+        throw new Error('[ERROR] 올바른 양수를 입력해 주세111요.');
       }
     });
   }
